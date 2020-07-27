@@ -18,8 +18,7 @@ import Control.Exception.Safe
 import Control.Monad.Fix
 
 import qualified Data.Set as S
-
-
+import qualified Data.Map.Strict as MS
 
 data MyException = MyException
   deriving (Show, Typeable)
@@ -45,6 +44,22 @@ tree '0' = ['1','[','0',']','0']
 tree '1' = ['1','1']
 tree '[' = ['[']
 tree ']' = [']']
+
+tree2 = MS.fromList [('0',['1', '[','0',']','0'])
+        ,('1',['1', '1'])
+        ,('[',['['])
+        ,(']',[']'])]
+
+createMatchFunc :: Ord(a) => MS.Map a [a] -> (a -> [a])
+createMatchFunc matchmap =
+  let
+    matchFunc sym =
+        case (matchmap MS.!? sym) of
+          Just xs -> xs
+          Nothing -> []
+  in
+    matchFunc
+
 
 createRoot :: [a] -> (a -> [a]) -> LSysRoot a
 createRoot start subf =
@@ -88,16 +103,14 @@ lsys =
     algaeroot = createRoot ['A'] algae
     algaesym = genSymbols algaeroot 6
     treeroot = createRoot ['0'] tree
-   
-
-
+    tree2root = createRoot ['0'] (createMatchFunc tree2)
     
   in
     do
       renderSVG "circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) line4
       putStrLn "foo"
       putStrLn $ show algaesym
-      putStrLn $ show $ genSymbols treeroot 0
-      putStrLn $ show $ genSymbols treeroot 1
-      putStrLn $ show $ genSymbols treeroot 2
+      putStrLn $ show $ genSymbols tree2root 0
+      putStrLn $ show $ genSymbols tree2root 1
+      putStrLn $ show $ genSymbols tree2root 2
 
