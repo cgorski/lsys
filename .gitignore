@@ -36,4 +36,7 @@ auto-save-list
 tramp
 .\#*
 
+# lsys
+
 lsys.cabal
+temp/*

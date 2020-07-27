@@ -21,6 +21,12 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- safe-exceptions
+- containers
+- diagrams
+- diagrams-lib
+- diagrams-svg
+
 
 library:
   source-dirs: src
@@ -46,3 +52,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - lsys
+    - hspec

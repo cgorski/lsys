@@ -6,6 +6,10 @@
 
 module Lib
     ( lsys
+    , createRoot
+    , createMatchFunc
+    , tree2
+    , genSymbols 
     ) where
 
 import Diagrams.Prelude

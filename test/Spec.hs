@@ -1,2 +1,16 @@
+import Lib
+import Test.Hspec
+
+tree2root = createRoot['0'] (createMatchFunc tree2)
+
+treeGenSymbols0Expected = "0"
+treeGenSymbols1Expected = "1[0]0"
+treeGenSymbols2Excepted = "11[1[0]0]1[0]0"
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main =
+  do
+    hspec $ do
+      describe "Lib.genSymbols (BinaryTree)" $ do
+        it "generates generation 0 of a tree" $ do
+          (genSymbols tree2root 0) `shouldBe` treeGenSymbols0Expected
