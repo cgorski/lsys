@@ -75,8 +75,11 @@ line = strokeT . fromOffsets $ [unitY]
 line2 :: Diagram B
 line2 = strokeT . fromOffsets $ [unitY # rotateBy (-(1/16)) ]
 
---line3 :: Diagram B
---line3 = atPoints $ [(0,0), (0,1)] (repeat (circle 0.05 # lw none # fc blue))
+line3 :: Diagram B
+line3 = atPoints (map p2 [(0,0), (0,1)]) (repeat (circle 0.2 # fc green))
+
+line4 :: Diagram B
+line4 = atPoints (map p2 [(0,0), (0,1)]) [line, line2]
 
 
 lsys :: IO ()
@@ -91,7 +94,7 @@ lsys =
     
   in
     do
-      renderSVG "circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) line2
+      renderSVG "circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) line4
       putStrLn "foo"
       putStrLn $ show algaesym
       putStrLn $ show $ genSymbols treeroot 0
