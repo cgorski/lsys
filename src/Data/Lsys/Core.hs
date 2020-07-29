@@ -39,14 +39,14 @@ root :: [a] -> (a -> [a]) -> LSysRoot a
 root start subf =
   LSysRoot start subf
 
-genList :: LSysRoot a -> LSysList a
-genList (LSysRoot start func) =
+rootList :: LSysRoot a -> LSysList a
+rootList (LSysRoot start func) =
   let nextgen = LSysRoot (concatMap func start) func in
-    (LSysRoot start func):(genList nextgen)
+    (LSysRoot start func):(rootList nextgen)
 
 roots :: LSysRoot a -> Int -> LSysRoot a
 roots root n =
-  (genList root) !! n
+  (rootList root) !! n
 
 symbols :: LSysRoot a -> Int -> [a]
 symbols rt n =
