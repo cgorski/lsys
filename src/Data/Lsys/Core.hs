@@ -7,10 +7,10 @@
 module Data.Lsys.Core
     (
       canonicalStr 
-    , createRoot
-    , createMatchFunc
-    , genRoots
-    , genSymbols 
+    , root
+    , matchFunc
+    , roots
+    , symbols 
     ) where
 
 import Control.Monad.Fix
@@ -25,8 +25,8 @@ instance Show a => Show (LSysRoot a) where
 
 type LSysList a = [LSysRoot a]
 
-createMatchFunc :: Ord(a) => MS.Map a [a] -> (a -> [a])
-createMatchFunc matchmap =
+matchFunc :: Ord(a) => MS.Map a [a] -> (a -> [a])
+matchFunc matchmap =
   let
     matchFunc sym =
         case (matchmap MS.!? sym) of
@@ -35,23 +35,23 @@ createMatchFunc matchmap =
   in
     matchFunc
 
-createRoot :: [a] -> (a -> [a]) -> LSysRoot a
-createRoot start subf =
+root :: [a] -> (a -> [a]) -> LSysRoot a
+root start subf =
   LSysRoot start subf
 
-createList :: LSysRoot a -> LSysList a
-createList (LSysRoot start func) =
+genList :: LSysRoot a -> LSysList a
+genList (LSysRoot start func) =
   let nextgen = LSysRoot (concatMap func start) func in
-    (LSysRoot start func):(createList nextgen)
+    (LSysRoot start func):(genList nextgen)
 
-genRoots :: LSysRoot a -> Int -> LSysRoot a
-genRoots root n =
-  (createList root) !! n
+roots :: LSysRoot a -> Int -> LSysRoot a
+roots root n =
+  (genList root) !! n
 
-genSymbols :: LSysRoot a -> Int -> [a]
-genSymbols root n =
-  case genRoots root n of
-    LSysRoot symbols _ -> symbols
+symbols :: LSysRoot a -> Int -> [a]
+symbols rt n =
+  case roots rt n of
+    LSysRoot syms _ -> syms
 
 canonicalStr :: Show a => [a] -> String
 canonicalStr xs =

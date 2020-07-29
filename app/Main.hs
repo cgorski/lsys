@@ -28,17 +28,17 @@ line4 = atPoints (map p2 [(0,0), (0,1)]) [line, line2]
 main :: IO ()
 main = 
   let
-    algaeroot = createRoot [A.A] (createMatchFunc A.grammar)
-    treeroot = createRoot [BT.Leaf] (createMatchFunc BT.grammar)
+    algaeroot = root [A.A] (matchFunc A.grammar)
+    treeroot = root [BT.Leaf] (matchFunc BT.grammar)
   in
     do
       renderSVG "circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) line4
-      putStrLn $ show $ genSymbols treeroot 0
-      putStrLn $ show $ genSymbols treeroot 1
-      putStrLn $ show $ genSymbols treeroot 2
+      putStrLn $ canonicalStr $ symbols treeroot 0
+      putStrLn $ canonicalStr $ symbols treeroot 1
+      putStrLn $ canonicalStr $ symbols treeroot 2
 
-      putStrLn $ show $ genSymbols algaeroot 0
-      putStrLn $ show $ genSymbols algaeroot 1
-      putStrLn $ show $ genSymbols algaeroot 2 
+      putStrLn $ canonicalStr $ symbols algaeroot 0
+      putStrLn $ canonicalStr $ symbols algaeroot 1
+      putStrLn $ canonicalStr $ symbols algaeroot 2 
   
  
