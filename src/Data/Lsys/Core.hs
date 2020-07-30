@@ -9,7 +9,7 @@ module Data.Lsys.Core
       canonicalStr 
     , root
     , matchFunc
-    , roots
+    , calcRoot
     , symbols 
     ) where
 
@@ -44,13 +44,13 @@ rootList (LSysRoot start func) =
   let nextgen = LSysRoot (concatMap func start) func in
     (LSysRoot start func):(rootList nextgen)
 
-roots :: LSysRoot a -> Int -> LSysRoot a
-roots root n =
+calcRoot :: LSysRoot a -> Int -> LSysRoot a
+calcRoot root n =
   (rootList root) !! n
 
 symbols :: LSysRoot a -> Int -> [a]
 symbols rt n =
-  case roots rt n of
+  case calcRoot rt n of
     LSysRoot syms _ -> syms
 
 canonicalStr :: Show a => [a] -> String
