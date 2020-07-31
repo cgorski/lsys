@@ -4,12 +4,15 @@
 {-# LANGUAGE TypeFamilies              #-}
 
 
-module Data.Lsys.Core
+module Data.Lsys.Model
     (
       canonicalStr 
     , root
     , matchFunc
     , calcRoot
+    , Stackable
+    , stacked
+    , StackedList (StackedList)
     , symbols 
     ) where
 
@@ -17,6 +20,11 @@ import Control.Monad.Fix
 
 import qualified Data.Set as S
 import qualified Data.Map.Strict as MS
+
+data StackedList a = StackedList (a, [StackedList a])
+
+class Stackable a where
+  stacked :: [a] -> [StackedList a]
 
 data LSysRoot a = LSysRoot [a] (a -> [a])
 
@@ -45,8 +53,8 @@ rootList (LSysRoot start func) =
     (LSysRoot start func):(rootList nextgen)
 
 calcRoot :: LSysRoot a -> Int -> LSysRoot a
-calcRoot root n =
-  (rootList root) !! n
+calcRoot rt n =
+  (rootList rt) !! n
 
 symbols :: LSysRoot a -> Int -> [a]
 symbols rt n =

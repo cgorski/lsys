@@ -1,6 +1,6 @@
 module Main where
 
-import Data.Lsys.Core
+import Data.Lsys.Model
 import qualified Data.Lsys.Model.Algae as A
 import qualified Data.Lsys.Model.BinaryTree as BT
 
@@ -17,7 +17,7 @@ line :: Diagram B
 line = strokeT . fromOffsets $ [unitY]
 
 line2 :: Diagram B
-line2 = strokeT . fromOffsets $ [unitY # rotateBy (-(1/16)) ]
+line2 = strokeT . fromOffsets $ [unitX # rotateBy (-(1/5)) ]
 
 line3 :: Diagram B
 line3 = atPoints (map p2 [(0,0), (0,1)]) (repeat (circle 0.2 # fc green))
@@ -28,7 +28,7 @@ line4 = atPoints (map p2 [(0,0), (0,1)]) [line, line2]
 main :: IO ()
 main = 
   let
-    algaeroot = root [A.A] (matchFunc A.grammar)
+    algaeroot = root [A.A] (matchFunc A.grammar) 
     treeroot = root [BT.Leaf] (matchFunc BT.grammar)
   in
     do
