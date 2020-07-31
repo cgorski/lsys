@@ -23,24 +23,24 @@ instance Show Alphabet where
 instance Stackable Alphabet where
   stacked lsys =
     let
-      push :: [Alphabet] -> S.Seq (StackedList Alphabet) -> (S.Seq (StackedList Alphabet), [Alphabet])
+      push :: [Alphabet] -> [StackedList Alphabet] -> ([StackedList Alphabet], [Alphabet])
       push [] oseq = (oseq, [])
-      push (x:[]) oseq = (oseq S.|> StackedList (x, []), [])
-      push (x:PopTurnRight:xs) oseq = (oseq S.|> StackedList (x, []), PopTurnRight:xs)
+      push (x:[]) oseq = ((StackedList (x, [])):oseq, [])
+      push (x:PopTurnRight:xs) oseq = ((StackedList (x, []):oseq), PopTurnRight:xs)
       push (PopTurnRight:xs) oseq =
         let
-          (result :: S.Seq (StackedList Alphabet), (remaining :: [Alphabet])) = push xs S.empty
+          (result :: [StackedList Alphabet], (remaining :: [Alphabet])) = push xs []
         in
-          push remaining (oseq S.|> StackedList (PopTurnRight, toList result))
+          push remaining ((StackedList (PopTurnRight, toList result)):oseq)
       push (PushTurnLeft:xs) oseq =
         let
-          (result, remaining) = push xs S.empty
+          (result, remaining) = push xs []
         in
-          push remaining (oseq S.|> StackedList (PushTurnLeft, toList result))
-      push (x:xs) oseq = push xs (oseq S.|> StackedList (x, []))
-      (result, _) = push lsys S.empty
+          push remaining ((StackedList (PushTurnLeft, toList result)):oseq)
+      push (x:xs) oseq = push xs ((StackedList (x, [])):oseq)
+      (result, _) = push lsys []
     in
-      toList result
+      reverse result
 
         
 grammar :: MS.Map Alphabet [Alphabet]
