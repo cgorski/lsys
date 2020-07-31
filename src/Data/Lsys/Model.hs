@@ -12,9 +12,10 @@ module Data.Lsys.Model
     , root
     , matchFunc
     , calcRoot
-    , Tree
-    , stacked
-    , TreeList (TreeList)
+    , Treeable
+    , tree
+    , head
+    , ListTree (ListTree)
     , symbols 
     ) where
 
@@ -23,17 +24,15 @@ import Control.Monad.Fix
 import qualified Data.Set as S
 import qualified Data.Map.Strict as MS
 
-data Show a => TreeList a = TreeList (a, [TreeList a]) deriving Show
+data Show a => ListTree a = ListTree (a, [ListTree a]) deriving Show
 
 class CanonicalStr a where
   canonicalChars :: a -> [Char]
   canonicalStr :: [a] -> String
   canonicalStr xs = concatMap canonicalChars xs 
 
-
-
-class Tree a where
-  stacked :: [a] -> [TreeList a]
+class Treeable a where
+  tree :: [a] -> [ListTree a]
 
 data LSysRoot a = LSysRoot [a] (a -> [a])
 

@@ -4,9 +4,9 @@ module Data.Lsys.Interpreter.Diagram.BinaryTree
   ) where
 
 
-import Data.Lsys.Model.BinaryTree
+import Data.Lsys.Model
 
---diagram :: Stackable a => [(a,[a])] -> Diagram B
---diagram rt =
+--diagram :: Tree a => a b -> Diagram B
+--diagram = 
   
    

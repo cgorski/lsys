@@ -21,24 +21,24 @@ instance CanonicalStr Alphabet where
   canonicalChars PushTurnLeft = "["
   canonicalChars PopTurnRight = "]"
 
-instance Tree Alphabet where
-  stacked lsys =
+instance Treeable Alphabet where
+  tree lsys =
     let
-      push :: [Alphabet] -> [TreeList Alphabet] -> ([TreeList Alphabet], [Alphabet])
+      push :: [Alphabet] -> [ListTree Alphabet] -> ([ListTree Alphabet], [Alphabet])
       push [] oseq = (oseq, [])
-      push (x:[]) oseq = ((TreeList (x, [])):oseq, [])
-      push (x:PopTurnRight:xs) oseq = ((TreeList (x, []):oseq), PopTurnRight:xs)
+      push (x:[]) oseq = ((ListTree (x, [])):oseq, [])
+      push (x:PopTurnRight:xs) oseq = ((ListTree (x, []):oseq), PopTurnRight:xs)
       push (PopTurnRight:xs) oseq =
         let
-          (result :: [TreeList Alphabet], (remaining :: [Alphabet])) = push xs []
+          (result :: [ListTree Alphabet], (remaining :: [Alphabet])) = push xs []
         in
-          push remaining ((TreeList (PopTurnRight, reverse $ toList result)):oseq)
+          push remaining ((ListTree (PopTurnRight, reverse $ toList result)):oseq)
       push (PushTurnLeft:xs) oseq =
         let
           (result, remaining) = push xs []
         in
-          push remaining ((TreeList (PushTurnLeft, reverse $ toList result)):oseq)
-      push (x:xs) oseq = push xs ((TreeList (x, [])):oseq)
+          push remaining ((ListTree (PushTurnLeft, reverse $ toList result)):oseq)
+      push (x:xs) oseq = push xs ((ListTree (x, [])):oseq)
       (result, _) = push lsys []
     in
       reverse result

@@ -41,8 +41,8 @@ main =
       putStrLn $ canonicalStr $ symbols algaeroot 1
       putStrLn $ canonicalStr $ symbols algaeroot 2
 
-      putStrLn $ show $ stacked $ symbols treeroot 0
-      putStrLn $ show $ stacked $ symbols treeroot 1
-      putStrLn $ show $ stacked $ symbols treeroot 2
+      putStrLn $ show $ tree $ symbols treeroot 0
+      putStrLn $ show $ tree $ symbols treeroot 1
+      putStrLn $ show $ tree $ symbols treeroot 2
   
  
