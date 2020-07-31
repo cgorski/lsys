@@ -32,12 +32,12 @@ instance Tree Alphabet where
         let
           (result :: [TreeList Alphabet], (remaining :: [Alphabet])) = push xs []
         in
-          push remaining ((TreeList (PopTurnRight, toList result)):oseq)
+          push remaining ((TreeList (PopTurnRight, reverse $ toList result)):oseq)
       push (PushTurnLeft:xs) oseq =
         let
           (result, remaining) = push xs []
         in
-          push remaining ((TreeList (PushTurnLeft, toList result)):oseq)
+          push remaining ((TreeList (PushTurnLeft, reverse $ toList result)):oseq)
       push (x:xs) oseq = push xs ((TreeList (x, [])):oseq)
       (result, _) = push lsys []
     in
