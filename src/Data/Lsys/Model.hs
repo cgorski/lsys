@@ -6,13 +6,15 @@
 
 module Data.Lsys.Model
     (
-      canonicalStr 
+      CanonicalStr
+    , canonicalStr
+    , canonicalChars
     , root
     , matchFunc
     , calcRoot
-    , Stackable
+    , Tree
     , stacked
-    , StackedList (StackedList)
+    , TreeList (TreeList)
     , symbols 
     ) where
 
@@ -21,10 +23,17 @@ import Control.Monad.Fix
 import qualified Data.Set as S
 import qualified Data.Map.Strict as MS
 
-data StackedList a = StackedList (a, [StackedList a])
+data Show a => TreeList a = TreeList (a, [TreeList a]) deriving Show
 
-class Stackable a where
-  stacked :: [a] -> [StackedList a]
+class CanonicalStr a where
+  canonicalChars :: a -> [Char]
+  canonicalStr :: [a] -> String
+  canonicalStr xs = concatMap canonicalChars xs 
+
+
+
+class Tree a where
+  stacked :: [a] -> [TreeList a]
 
 data LSysRoot a = LSysRoot [a] (a -> [a])
 
@@ -61,6 +70,3 @@ symbols rt n =
   case calcRoot rt n of
     LSysRoot syms _ -> syms
 
-canonicalStr :: Show a => [a] -> String
-canonicalStr xs =
-  concatMap show xs 

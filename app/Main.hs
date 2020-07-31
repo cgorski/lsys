@@ -32,13 +32,17 @@ main =
     treeroot = root [BT.Leaf] (matchFunc BT.grammar)
   in
     do
-      renderSVG "circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) line4
+      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) line4
       putStrLn $ canonicalStr $ symbols treeroot 0
       putStrLn $ canonicalStr $ symbols treeroot 1
       putStrLn $ canonicalStr $ symbols treeroot 2
 
       putStrLn $ canonicalStr $ symbols algaeroot 0
       putStrLn $ canonicalStr $ symbols algaeroot 1
-      putStrLn $ canonicalStr $ symbols algaeroot 2 
+      putStrLn $ canonicalStr $ symbols algaeroot 2
+
+      putStrLn $ show $ stacked $ symbols treeroot 0
+      putStrLn $ show $ stacked $ symbols treeroot 1
+      putStrLn $ show $ stacked $ symbols treeroot 2
   
  

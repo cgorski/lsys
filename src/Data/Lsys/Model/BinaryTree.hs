@@ -12,32 +12,33 @@ import qualified Data.Sequence as S
 import Data.Lsys.Model
 
 data Alphabet = Leaf | Branch | PushTurnLeft | PopTurnRight
-  deriving (Ord, Eq)
+  deriving (Ord, Eq, Show)
 
-instance Show Alphabet where
-  show Leaf = "L"
-  show Branch = "B"
-  show PushTurnLeft = "["
-  show PopTurnRight = "]"
 
-instance Stackable Alphabet where
+instance CanonicalStr Alphabet where
+  canonicalChars Leaf = "L"
+  canonicalChars Branch = "B"
+  canonicalChars PushTurnLeft = "["
+  canonicalChars PopTurnRight = "]"
+
+instance Tree Alphabet where
   stacked lsys =
     let
-      push :: [Alphabet] -> [StackedList Alphabet] -> ([StackedList Alphabet], [Alphabet])
+      push :: [Alphabet] -> [TreeList Alphabet] -> ([TreeList Alphabet], [Alphabet])
       push [] oseq = (oseq, [])
-      push (x:[]) oseq = ((StackedList (x, [])):oseq, [])
-      push (x:PopTurnRight:xs) oseq = ((StackedList (x, []):oseq), PopTurnRight:xs)
+      push (x:[]) oseq = ((TreeList (x, [])):oseq, [])
+      push (x:PopTurnRight:xs) oseq = ((TreeList (x, []):oseq), PopTurnRight:xs)
       push (PopTurnRight:xs) oseq =
         let
-          (result :: [StackedList Alphabet], (remaining :: [Alphabet])) = push xs []
+          (result :: [TreeList Alphabet], (remaining :: [Alphabet])) = push xs []
         in
-          push remaining ((StackedList (PopTurnRight, toList result)):oseq)
+          push remaining ((TreeList (PopTurnRight, toList result)):oseq)
       push (PushTurnLeft:xs) oseq =
         let
           (result, remaining) = push xs []
         in
-          push remaining ((StackedList (PushTurnLeft, toList result)):oseq)
-      push (x:xs) oseq = push xs ((StackedList (x, [])):oseq)
+          push remaining ((TreeList (PushTurnLeft, toList result)):oseq)
+      push (x:xs) oseq = push xs ((TreeList (x, [])):oseq)
       (result, _) = push lsys []
     in
       reverse result

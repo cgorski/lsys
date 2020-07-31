@@ -5,10 +5,14 @@ module Data.Lsys.Model.Algae
   ) where
 
 import qualified Data.Map.Strict as MS
+import Data.Lsys.Model
 
 data Alphabet = A | B
   deriving (Show, Ord, Eq)
 
+instance CanonicalStr Alphabet where
+  canonicalChars A = "A"
+  canonicalChars B = "B"
 
 grammar :: MS.Map Alphabet [Alphabet]
 grammar = MS.fromList
