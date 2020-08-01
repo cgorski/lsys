@@ -12,10 +12,11 @@ module Data.Lsys.Model
     , root
     , matchFunc
     , calcRoot
-    , Treeable
+    , Directionable
     , tree
     , head
-    , ListTree (ListTree)
+    , DirectionTree (DirectionTree)
+    , Direction (Forward, Turn, Push, Pop)
     , symbols 
     ) where
 
@@ -24,15 +25,17 @@ import Control.Monad.Fix
 import qualified Data.Set as S
 import qualified Data.Map.Strict as MS
 
-data Show a => ListTree a = ListTree (a, [ListTree a]) deriving Show
+
+data Direction = Forward Float | Turn Float | Push Float | Pop Float deriving Show
+data DirectionTree = DirectionTree ([Direction], [DirectionTree]) deriving Show
 
 class CanonicalStr a where
   canonicalChars :: a -> [Char]
   canonicalStr :: [a] -> String
   canonicalStr xs = concatMap canonicalChars xs 
 
-class Treeable a where
-  tree :: [a] -> [ListTree a]
+class Directionable a where
+  tree :: [a] -> [DirectionTree]
 
 data LSysRoot a = LSysRoot [a] (a -> [a])
 
