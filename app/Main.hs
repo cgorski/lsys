@@ -58,7 +58,7 @@ branch3 = hrule 1 # lc green # lw 2 <> hrule (1/2) # rotateBy (1/8) <> hrule 2
   --   a2 = a1 S.|> unitY
     
 recurse :: M.ForwardTurnDirection
-recurse = ForwardTurnDirection [Forward (1/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1] []
+recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1] []
 
 data ConversionState a b v n = ConversionState
                        { nextFunc :: a -> b,
@@ -67,21 +67,34 @@ data ConversionState a b v n = ConversionState
                          vectors :: S.Seq (v n),
                          diagrams :: S.Seq (Diagram B)
                        }
-
+-- # fromOffsets # fromVertices # strokeTrail # lc green # lw 2 # moveOriginBy (foldl (^+^)  (r2 (0.0,0.0)) veclist) # showOrigin # named name 
 diagramOfDirections :: ForwardTurnDirection -> Diagram B
 diagramOfDirections dirs =
   let
+    startState = ConversionState  {
+      nextFunc = id,
+      nextScaleFactor = 1,
+      nextVector = unitY,
+      vectors = S.empty, 
+      diagrams = S.empty
+      }
+    
+    subdf :: ForwardTurnDirection -> ConversionState (V2 Double) (V2 Double) V2 Double -> [ConversionState (V2 Double) (V2 Double) V2 Double] -> [Int] -> Diagram B
     subdf (ForwardTurnDirection dirs subdirs) state stateStack nameStack =
       let
-        startDiagram :: Diagram B
-        startDiagram = df dirs state 1
-        m :: Diagram B
-        m = mconcat (map (\(ForwardTurnDirection (subdir :: [ForwardTurn]) _) -> df subdir state 1) subdirs)
+        (trail, lastPoint) = df dirs state [] 
       in
-        startDiagram <> m
-    df :: [ForwardTurn] -> ConversionState (V2 Double) (V2 Double) V2 Double -> Int -> Diagram B
+        trail # strokeTrail
+        
+    df :: [ForwardTurn] -> ConversionState (V2 Double) (V2 Double) V2 Double -> [Int] -> (Trail V2 Double, (Double, Double))
     df [] state name =
-      (toList (vectors state)) # fromOffsets # fromVertices # strokeTrail # lc green # lw 2
+      let
+        vecList = toList (vectors state)
+        trail = vecList # trailFromOffsets
+        lastPoint ::  (Double, Double)
+        lastPoint = unr2 $ foldl (^+^) (r2 (0.0,0.0)) vecList
+      in
+        (trail, lastPoint)
     df (x:xs) state name = 
       case x of 
         Forward dirScale ->
@@ -109,15 +122,8 @@ diagramOfDirections dirs =
             df xs nextState name
   in
     let
-      state = ConversionState  {
-        nextFunc = id,
-        nextScaleFactor = 1,
-        nextVector = unitY,
-        vectors = S.empty, 
-        diagrams = S.empty
-      }
     in
-      subdf dirs state [] [1]
+      subdf dirs startState [] [0]
 
 
 
