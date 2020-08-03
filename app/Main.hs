@@ -56,8 +56,8 @@ branch3 = hrule 1 # lc green # lw 2 <> hrule (1/2) # rotateBy (1/8) <> hrule 2
   --   a2 = 
   --   a2 = a1 S.|> unitY
     
-recurse :: [M.ForwardTurnDirection]
-recurse = [Forward (1/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1]
+recurse :: M.ForwardTurnDirection
+recurse = ForwardTurnDirection [Forward (1/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1] []
 
 data ConversionState a b v n = ConversionState
                        { nextFunc :: a -> b,
@@ -67,7 +67,7 @@ data ConversionState a b v n = ConversionState
                          diagrams :: S.Seq (Diagram B)
                        }
 
-diagramOfDirections :: [ForwardTurnDirection] -> Diagram B
+diagramOfDirections :: ForwardTurnDirection -> Diagram B
 diagramOfDirections dirs =
   let
     df [] state =
@@ -79,7 +79,7 @@ diagramOfDirections dirs =
             funcAppliedVec = (nextVector state) # nextFunc state
             nextState = ConversionState {
               nextFunc = id,
-              nextScaleFactor = 1,
+              nextScaleFactor = nextScaleFactor state,
               nextVector = funcAppliedVec,
               vectors = (vectors state S.|> funcAppliedVec # scale ((nextScaleFactor state)*dirScale)),
               diagrams = S.empty
@@ -90,25 +90,26 @@ diagramOfDirections dirs =
           let
             nextState = ConversionState {
               nextFunc = (nextFunc state) . (rotateBy dirAngle), 
-              nextScaleFactor = 1,
+              nextScaleFactor = nextScaleFactor state,
               nextVector = nextVector state,
               vectors = vectors state,
               diagrams = S.empty
               }
           in
             df xs nextState
-        SubDirections sub -> df xs state
   in
     let
       state = ConversionState  {
         nextFunc = id,
         nextScaleFactor = 1,
-        nextVector = unitX,
+        nextVector = unitY,
         vectors = S.empty, 
         diagrams = S.empty
       }
     in
-      df dirs state 
+      case dirs of
+        ForwardTurnDirection dirs2 subdirs -> df dirs2 state
+
 
 -- diagramOfDirections2 :: [ForwardTurnDirection] -> Diagram B
 -- diagramOfDirections2 dirs =

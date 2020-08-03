@@ -15,7 +15,8 @@ module Data.Lsys.Model
     , Directionable
     , tree
     , head
-    , ForwardTurnDirection (Forward, Turn, SubDirections)
+    , ForwardTurn (Forward, Turn)
+    , ForwardTurnDirection (ForwardTurnDirection)
     , symbols 
     ) where
 
@@ -24,8 +25,8 @@ import Control.Monad.Fix
 import qualified Data.Set as S
 import qualified Data.Map.Strict as MS
 
-
-data ForwardTurnDirection = Forward Double | Turn Double | SubDirections [ForwardTurnDirection] deriving Show 
+data ForwardTurn = Forward Double | Turn Double deriving Show
+data ForwardTurnDirection = ForwardTurnDirection [ForwardTurn] [ForwardTurnDirection] deriving Show 
 
 
 class CanonicalStr a where
