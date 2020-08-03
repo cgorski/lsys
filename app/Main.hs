@@ -2,6 +2,7 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE FlexibleContexts          #-}
 {-# LANGUAGE TypeFamilies              #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
 
 
 module Main where
@@ -71,11 +72,17 @@ diagramOfDirections :: ForwardTurnDirection -> Diagram B
 diagramOfDirections dirs =
   let
     subdf (ForwardTurnDirection dirs subdirs) state stateStack nameStack =
-      df dirs state []
-    df :: [ForwardTurn] -> ConversionState (V2 Double) (V2 Double) V2 Double -> b -> Diagram B
+      let
+        startDiagram :: Diagram B
+        startDiagram = df dirs state 1
+        m :: Diagram B
+        m = mconcat (map (\(ForwardTurnDirection (subdir :: [ForwardTurn]) _) -> df subdir state 1) subdirs)
+      in
+        startDiagram <> m
+    df :: [ForwardTurn] -> ConversionState (V2 Double) (V2 Double) V2 Double -> Int -> Diagram B
     df [] state name =
       (toList (vectors state)) # fromOffsets # fromVertices # strokeTrail # lc green # lw 2
-    df (x:xs) state _ = 
+    df (x:xs) state name = 
       case x of 
         Forward dirScale ->
           let
@@ -88,7 +95,7 @@ diagramOfDirections dirs =
               diagrams = S.empty
               }
           in
-            df xs nextState 1
+            df xs nextState name
         Turn dirAngle ->
           let
             nextState = ConversionState {
@@ -99,7 +106,7 @@ diagramOfDirections dirs =
               diagrams = S.empty
               }
           in
-            df xs nextState 1
+            df xs nextState name
   in
     let
       state = ConversionState  {
