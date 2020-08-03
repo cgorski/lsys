@@ -15,8 +15,7 @@ module Data.Lsys.Model
     , Directionable
     , tree
     , head
-    , DirectionTree (DirectionTree)
-    , Direction (Forward, Turn, Push, Pop)
+    , ForwardTurnDirection (Forward, Turn, SubDirections)
     , symbols 
     ) where
 
@@ -26,8 +25,8 @@ import qualified Data.Set as S
 import qualified Data.Map.Strict as MS
 
 
-data Direction = Forward Float | Turn Float | Push Float | Pop Float deriving Show
-data DirectionTree = DirectionTree ([Direction], [DirectionTree]) deriving Show
+data ForwardTurnDirection = Forward Double | Turn Double | SubDirections [ForwardTurnDirection] deriving Show 
+
 
 class CanonicalStr a where
   canonicalChars :: a -> [Char]
@@ -35,7 +34,7 @@ class CanonicalStr a where
   canonicalStr xs = concatMap canonicalChars xs 
 
 class Directionable a where
-  tree :: [a] -> [DirectionTree]
+  tree :: [a] -> [ForwardTurnDirection]
 
 data LSysRoot a = LSysRoot [a] (a -> [a])
 
