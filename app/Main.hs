@@ -79,12 +79,12 @@ diagramOfDirections dirs =
       diagrams = S.empty
       }
     
-    subdf :: ForwardTurnDirection -> ConversionState (V2 Double) (V2 Double) V2 Double -> [ConversionState (V2 Double) (V2 Double) V2 Double] -> [Int] -> Diagram B
-    subdf (ForwardTurnDirection dirs subdirs) state stateStack nameStack =
+    subdf :: ForwardTurnDirection -> ConversionState (V2 Double) (V2 Double) V2 Double -> [ConversionState (V2 Double) (V2 Double) V2 Double] -> [Int] -> Point V2 Double -> Diagram B
+    subdf (ForwardTurnDirection dirs subdirs) state stateStack nameStack startPoint=
       let
         (trail, lastPoint) = df dirs state [] 
       in
-        trail # strokeTrail
+        pathFromTrailAt trail startPoint # strokePath
         
     df :: [ForwardTurn] -> ConversionState (V2 Double) (V2 Double) V2 Double -> [Int] -> (Trail V2 Double, (Double, Double))
     df [] state name =
@@ -123,7 +123,7 @@ diagramOfDirections dirs =
   in
     let
     in
-      subdf dirs startState [] [0]
+      subdf dirs startState [] [0] (p2 (0.0,0.0))
 
 
 
