@@ -70,6 +70,10 @@ data ConversionState a b v n = ConversionState
 diagramOfDirections :: ForwardTurnDirection -> Diagram B
 diagramOfDirections dirs =
   let
+--    subdf :: ForwardTurnDirection -> ConversionState (V2 Double) v n => a b v n -> Diagram B
+--    subdf dirs state = [unitX, unitY] # fromOffsets # fromVertices # strokeTrail # lc green # lw 2
+    subdf (ForwardTurnDirection dirs _) state stateStack =
+      df dirs state
     df [] state =
       (toList (vectors state)) # fromOffsets # fromVertices # strokeTrail # lc green # lw 2
     df (x:xs) state = 
@@ -107,8 +111,9 @@ diagramOfDirections dirs =
         diagrams = S.empty
       }
     in
-      case dirs of
-        ForwardTurnDirection dirs2 subdirs -> df dirs2 state
+      subdf dirs state []
+
+
 
 
 -- diagramOfDirections2 :: [ForwardTurnDirection] -> Diagram B
