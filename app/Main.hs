@@ -58,7 +58,9 @@ branch3 = hrule 1 # lc green # lw 2 <> hrule (1/2) # rotateBy (1/8) <> hrule 2
   --   a2 = a1 S.|> unitY
     
 recurse :: M.ForwardTurnDirection
-recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1] []
+--recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1] []
+recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1]
+          [ForwardTurnDirection [Forward 2] [], ForwardTurnDirection [Turn (1/8), Forward 1] []]
 
 data ConversionState a b v n = ConversionState
                        { nextFunc :: a -> b,
@@ -79,12 +81,15 @@ diagramOfDirections dirs =
       diagrams = S.empty
       }
     
-    subdf :: ForwardTurnDirection -> ConversionState (V2 Double) (V2 Double) V2 Double -> [ConversionState (V2 Double) (V2 Double) V2 Double] -> [Int] -> Point V2 Double -> Diagram B
+    subdf :: ForwardTurnDirection -> ConversionState (V2 Double) (V2 Double) V2 Double -> [ConversionState (V2 Double) (V2 Double) V2 Double] -> [Int] -> Point V2 Double -> Path V2 Double
     subdf (ForwardTurnDirection dirs subdirs) state stateStack nameStack startPoint=
       let
-        (trail, lastPoint) = df dirs state [] 
+        (trail, lastPoint) = df dirs state []
+        path = pathFromTrailAt trail startPoint
+--        path2 = pathFromTrailAt trail (p2 (1.0,1.0))
       in
-        pathFromTrailAt trail startPoint # strokePath
+--        mconcat [path, path2]
+        mconcat (path:(map (\sub -> subdf sub startState [] [0] (p2 lastPoint)) subdirs))
         
     df :: [ForwardTurn] -> ConversionState (V2 Double) (V2 Double) V2 Double -> [Int] -> (Trail V2 Double, (Double, Double))
     df [] state name =
@@ -123,7 +128,7 @@ diagramOfDirections dirs =
   in
     let
     in
-      subdf dirs startState [] [0] (p2 (0.0,0.0))
+      subdf dirs startState [] [0] (p2 (0.0,0.0)) # strokePath
 
 
 
