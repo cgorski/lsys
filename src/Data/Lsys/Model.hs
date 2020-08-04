@@ -35,7 +35,7 @@ class CanonicalStr a where
   canonicalStr xs = concatMap canonicalChars xs 
 
 class Directionable a where
-  tree :: [a] -> [ForwardTurnDirection]
+  tree :: [a] -> ForwardTurnDirection
 
 data LSysRoot a = LSysRoot [a] (a -> [a])
 

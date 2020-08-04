@@ -50,13 +50,6 @@ branch2 = [unitY, unitY # rotateBy (1/8)] # fromOffsets # fromVertices # strokeT
 branch3 :: Diagram B
 branch3 = hrule 1 # lc green # lw 2 <> hrule (1/2) # rotateBy (1/8) <> hrule 2
 
-
-  -- let
-  --   a = S.fromList []
-  --   a1 = a S.|> unitY
-  --   a2 = 
-  --   a2 = a1 S.|> unitY
-    
 recurse :: M.ForwardTurnDirection
 --recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1] []
 recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1]
@@ -81,16 +74,14 @@ diagramOfDirections dirs =
       diagrams = S.empty
       }
     
-    subdf :: ForwardTurnDirection -> ConversionState (V2 Double) (V2 Double) V2 Double -> [ConversionState (V2 Double) (V2 Double) V2 Double] -> [Int] -> Point V2 Double -> Path V2 Double
-    subdf (ForwardTurnDirection dirs subdirs) state stateStack nameStack startPoint=
+    subdf :: ForwardTurnDirection -> ConversionState (V2 Double) (V2 Double) V2 Double -> Point V2 Double -> Path V2 Double
+    subdf (ForwardTurnDirection dirs subdirs) state startPoint =
       let
         (trail, lastPoint) = df dirs state []
         path = pathFromTrailAt trail startPoint
---        path2 = pathFromTrailAt trail (p2 (1.0,1.0))
       in
---        mconcat [path, path2]
-        mconcat (path:(map (\sub -> subdf sub startState [] [0] (p2 lastPoint)) subdirs))
-        
+        mconcat (path:(map (\sub -> subdf sub startState (p2 lastPoint)) subdirs))
+
     df :: [ForwardTurn] -> ConversionState (V2 Double) (V2 Double) V2 Double -> [Int] -> (Trail V2 Double, (Double, Double))
     df [] state name =
       let
@@ -128,7 +119,7 @@ diagramOfDirections dirs =
   in
     let
     in
-      subdf dirs startState [] [0] (p2 (0.0,0.0)) # strokePath
+      subdf dirs startState (p2 (0.0,0.0)) # strokePath
 
 
 
@@ -166,6 +157,8 @@ main =
       putStrLn $ canonicalStr $ symbols algaeroot 0
       putStrLn $ canonicalStr $ symbols algaeroot 1
       putStrLn $ canonicalStr $ symbols algaeroot 2
+
+      putStrLn $ show $ tree $ symbols treeroot 2
 
 --      putStrLn $ show $ tree $ symbols treeroot 0
 --      putStrLn $ show $ tree $ symbols treeroot 1
