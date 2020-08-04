@@ -59,8 +59,7 @@ data ConversionState a b v n = ConversionState
                        { nextFunc :: a -> b,
                          nextScaleFactor :: Double,
                          nextVector :: v n,
-                         vectors :: S.Seq (v n),
-                         diagrams :: S.Seq (Diagram B)
+                         vectors :: S.Seq (v n)
                        }
 -- # fromOffsets # fromVertices # strokeTrail # lc green # lw 2 # moveOriginBy (foldl (^+^)  (r2 (0.0,0.0)) veclist) # showOrigin # named name 
 diagramOfDirections :: ForwardTurnDirection -> Diagram B
@@ -70,8 +69,7 @@ diagramOfDirections dirs =
       nextFunc = id,
       nextScaleFactor = 1,
       nextVector = unitY,
-      vectors = S.empty, 
-      diagrams = S.empty
+      vectors = S.empty
       }
     
     subdf :: ForwardTurnDirection -> ConversionState (V2 Double) (V2 Double) V2 Double -> Point V2 Double -> Path V2 Double
@@ -100,8 +98,7 @@ diagramOfDirections dirs =
               nextFunc = id,
               nextScaleFactor = nextScaleFactor state,
               nextVector = funcAppliedVec,
-              vectors = (vectors state S.|> funcAppliedVec # scale ((nextScaleFactor state)*dirScale)),
-              diagrams = S.empty
+              vectors = (vectors state S.|> funcAppliedVec # scale ((nextScaleFactor state)*dirScale))
               }
           in
             df xs nextState name
@@ -111,8 +108,7 @@ diagramOfDirections dirs =
               nextFunc = (nextFunc state) . (rotateBy dirAngle), 
               nextScaleFactor = nextScaleFactor state,
               nextVector = nextVector state,
-              vectors = vectors state,
-              diagrams = S.empty
+              vectors = vectors state
               }
           in
             df xs nextState name

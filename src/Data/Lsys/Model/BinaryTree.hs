@@ -26,10 +26,14 @@ instance Directionable Alphabet where
     let
       translate :: [Alphabet] -> ForwardTurnDirection -> ForwardTurnDirection
       translate [] ftd = ftd
+      translate (Branch:xs) ftd =
+        case ftd of
+          ForwardTurnDirection ftl ftdl ->
+            translate xs $ ForwardTurnDirection (ftl ++ [Forward 1]) []
       translate (x:xs) ftd =
         case ftd of
           ForwardTurnDirection ftl ftdl ->
-            translate xs $ ForwardTurnDirection [Forward 1] []
+            translate xs $ ForwardTurnDirection (ftl ++ [Forward (1/2)]) []
     in
       translate lsys (ForwardTurnDirection [] [])
                                            
