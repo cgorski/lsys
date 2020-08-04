@@ -50,10 +50,6 @@ branch2 = [unitY, unitY # rotateBy (1/8)] # fromOffsets # fromVertices # strokeT
 branch3 :: Diagram B
 branch3 = hrule 1 # lc green # lw 2 <> hrule (1/2) # rotateBy (1/8) <> hrule 2
 
-recurse :: M.ForwardTurnDirection
---recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1] []
-recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1]
-          [ForwardTurnDirection [Forward 2] [], ForwardTurnDirection [Turn (1/8), Forward 1] []]
 
 data ConversionState a b v n = ConversionState
                        { nextFunc :: a -> b,
@@ -77,8 +73,9 @@ diagramOfDirections dirs =
       let
         (trail, lastPoint) = df dirs state []
         path = pathFromTrailAt trail startPoint
+        newStartPoint = startPoint + (p2 lastPoint)
       in
-        mconcat (path:(map (\sub -> subdf sub startState (p2 lastPoint)) subdirs))
+        mconcat (path:(map (\sub -> subdf sub startState newStartPoint) subdirs))
 
     df :: [ForwardTurn] -> ConversionState (V2 Double) (V2 Double) V2 Double -> [Int] -> (Trail V2 Double, (Double, Double))
     df [] state name =
@@ -113,9 +110,7 @@ diagramOfDirections dirs =
           in
             df xs nextState name
   in
-    let
-    in
-      subdf dirs startState (p2 (0.0,0.0)) # strokePath
+    subdf dirs startState (p2 (0.0,0.0)) # strokePath # lc green # lw 2
 
 
 
@@ -135,6 +130,18 @@ diagramOfDirections dirs =
 --   in
 --     df dirs id unitY S.empty []
  
+recurse :: M.ForwardTurnDirection
+--recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1] []
+recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1]
+          [ForwardTurnDirection [Forward 2] [], ForwardTurnDirection [Turn (1/8), Forward 1] []]
+
+manual = ForwardTurnDirection [Forward 1.0,Forward 1.0] [ForwardTurnDirection [Turn 0.125,Forward 1.0] [ForwardTurnDirection [Turn 0.125,Forward 0.5] [],ForwardTurnDirection [Turn (-0.125),Forward 0.5] []],ForwardTurnDirection [Turn (-0.125)] []]
+
+manual2 =
+  ForwardTurnDirection [Forward 1.0] [
+  ForwardTurnDirection [Turn (-0.125),Forward 1.0] [
+      ForwardTurnDirection [Turn (-0.125),Forward 1.0] []], ForwardTurnDirection [Turn (0.125),Forward 1.0] []]
+
 
 main :: IO ()
 main = 
@@ -144,7 +151,7 @@ main =
   in
     do
 --      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ branch3
-      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections recurse
+--      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections recurse
 --      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) (tree1 # (withName "foo" $ \d -> tree2))
       putStrLn $ canonicalStr $ symbols treeroot 0
       putStrLn $ canonicalStr $ symbols treeroot 1
@@ -155,7 +162,10 @@ main =
       putStrLn $ canonicalStr $ symbols algaeroot 2
 
       putStrLn $ show $ tree $ symbols treeroot 2
-
+      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections $ tree $ symbols treeroot 2
+      renderSVG "temp/recurse.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections recurse
+      renderSVG "temp/manual.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections manual
+      renderSVG "temp/manual2.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections manual2      
 --      putStrLn $ show $ tree $ symbols treeroot 0
 --      putStrLn $ show $ tree $ symbols treeroot 1
 --      putStrLn $ show $ tree $ symbols treeroot 2
