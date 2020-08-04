@@ -24,18 +24,33 @@ instance CanonicalStr Alphabet where
 instance Directionable Alphabet where
   tree lsys =
     let
-      translate :: [Alphabet] -> ForwardTurnDirection -> ForwardTurnDirection
-      translate [] ftd = ftd
+      translate :: [Alphabet] -> ForwardTurnDirection -> (ForwardTurnDirection, [Alphabet])
+      translate [] ftd = (ftd, [])
       translate (Branch:xs) ftd =
         case ftd of
           ForwardTurnDirection ftl ftdl ->
-            translate xs $ ForwardTurnDirection (ftl ++ [Forward 1]) []
-      translate (x:xs) ftd =
+            translate xs $ ForwardTurnDirection (ftl ++ [Forward 1]) ftdl
+      translate (Leaf:xs) ftd =
         case ftd of
           ForwardTurnDirection ftl ftdl ->
-            translate xs $ ForwardTurnDirection (ftl ++ [Forward (1/2)]) []
+            translate xs $ ForwardTurnDirection (ftl ++ [Forward (1/2)]) ftdl
+      translate (PushTurnLeft:xs) ftd =
+        case ftd of
+          ForwardTurnDirection ftl ftdl ->
+            let
+              (result, remainder) = translate xs $ ForwardTurnDirection [Turn (1/8)] []
+              (popPortion, _) = translate remainder $ ForwardTurnDirection [Turn (-1/8)] []  
+            in
+              (ForwardTurnDirection (ftl)  (ftdl ++ [result] ++ [popPortion]),[])
+      translate (PopTurnRight:xs) ftd =
+        case ftd of
+          ForwardTurnDirection ftl ftdl ->
+            (ftd,xs)
     in
-      translate lsys (ForwardTurnDirection [] [])
+      let
+        (result, _) = translate lsys (ForwardTurnDirection [] [])
+      in
+        result 
                                            
 
 grammar :: MS.Map Alphabet [Alphabet]
