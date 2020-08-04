@@ -71,13 +71,19 @@ diagramOfDirections dirs =
     subdf :: ForwardTurnDirection -> ConversionState (V2 Double) (V2 Double) V2 Double -> Point V2 Double -> Path V2 Double
     subdf (ForwardTurnDirection dirs subdirs) state startPoint =
       let
-        (trail, lastPoint) = df dirs state []
+        (trail, lastPoint, lastState) = df dirs state []
         path = pathFromTrailAt trail startPoint
         newStartPoint = startPoint + (p2 lastPoint)
+        newStartState = ConversionState {
+          nextFunc = nextFunc state,
+          nextScaleFactor = nextScaleFactor state,
+          nextVector = nextVector lastState,
+          vectors = vectors state
+          }
       in
-        mconcat (path:(map (\sub -> subdf sub startState newStartPoint) subdirs))
+        mconcat (path:(map (\sub -> subdf sub newStartState newStartPoint) subdirs))
 
-    df :: [ForwardTurn] -> ConversionState (V2 Double) (V2 Double) V2 Double -> [Int] -> (Trail V2 Double, (Double, Double))
+    df :: [ForwardTurn] -> ConversionState (V2 Double) (V2 Double) V2 Double -> [Int] -> (Trail V2 Double, (Double, Double), ConversionState (V2 Double) (V2 Double) V2 Double)
     df [] state name =
       let
         vecList = toList (vectors state)
@@ -85,7 +91,7 @@ diagramOfDirections dirs =
         lastPoint ::  (Double, Double)
         lastPoint = unr2 $ foldl (^+^) (r2 (0.0,0.0)) vecList
       in
-        (trail, lastPoint)
+        (trail, lastPoint, state)
     df (x:xs) state name = 
       case x of 
         Forward dirScale ->
