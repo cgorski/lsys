@@ -167,8 +167,8 @@ main =
       putStrLn $ canonicalStr $ symbols algaeroot 1
       putStrLn $ canonicalStr $ symbols algaeroot 2
 
-      putStrLn $ show $ tree $ symbols treeroot 2
-      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections $ tree $ symbols treeroot 2
+      putStrLn $ show $ tree $ symbols treeroot 5
+      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections $ tree $ symbols treeroot 5
       renderSVG "temp/recurse.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections recurse
       renderSVG "temp/manual.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections manual
       renderSVG "temp/manual2.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections manual2      

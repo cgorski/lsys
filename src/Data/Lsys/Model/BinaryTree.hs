@@ -39,9 +39,9 @@ instance Directionable Alphabet where
           ForwardTurnDirection ftl ftdl ->
             let
               (result, remainder) = translate xs $ ForwardTurnDirection [Turn (1/8)] []
-              (popPortion, _) = translate remainder $ ForwardTurnDirection [Turn (-1/8)] []  
+              (popPortion, popRemainder) = translate remainder $ ForwardTurnDirection [Turn (-1/8)] []  
             in
-              (ForwardTurnDirection (ftl)  (ftdl ++ [result] ++ [popPortion]),[])
+              (ForwardTurnDirection (ftl)  (ftdl ++ [result] ++ [popPortion]), popRemainder)
       translate (PopTurnRight:xs) ftd =
         case ftd of
           ForwardTurnDirection ftl ftdl ->
