@@ -10,6 +10,7 @@ module Main where
 import Data.Lsys.Model as M
 import qualified Data.Lsys.Model.Algae as A
 import qualified Data.Lsys.Model.BinaryTree as BT
+import qualified Data.Lsys.Model.Fern as F
 import Data.Foldable
 
 import Diagrams.Prelude
@@ -18,46 +19,13 @@ import Diagrams.TwoD.Size
 
 import qualified Data.Sequence as S
 
--- diagram :: Diagram SVG R2
-
-myCircle :: Diagram B
-myCircle = circle 1
-
-line :: Diagram B
-line = strokeT . fromOffsets $ [unitY]
-
-line2 :: Diagram B
-line2 = strokeT . fromOffsets $ [unitX # rotateBy (-(1/5)) ]
-
-line3 :: Diagram B
-line3 = atPoints (map p2 [(0,0), (0,1)]) (repeat (circle 0.2 # fc green))
-
-line4 :: Diagram B
-line4 = atPoints (map p2 [(0,0), (0,1)]) [line, line2]
-
-tree1 :: Diagram B
-tree1 = (fromOffsets $ [unitX, unitX # rotateBy ((1/8)) # scale (1/2)]) # named "foo"
-
-tree2 :: Diagram B
-tree2 = (fromOffsets $ [unitY]) # lc green # named "bar"
-
-branch1  :: Diagram B
-branch1 = [p2 (0,0), p2 (0,1)] # fromVertices # strokeTrail # lc green # lw 2
-
-branch2 :: Diagram B
-branch2 = [unitY, unitY # rotateBy (1/8)] # fromOffsets # fromVertices # strokeTrail # lc green # lw 2
-
-branch3 :: Diagram B
-branch3 = hrule 1 # lc green # lw 2 <> hrule (1/2) # rotateBy (1/8) <> hrule 2
-
-
 data ConversionState a b v n = ConversionState
                        { nextFunc :: a -> b,
                          nextScaleFactor :: Double,
                          nextVector :: v n,
                          vectors :: S.Seq (v n)
                        }
--- # fromOffsets # fromVertices # strokeTrail # lc green # lw 2 # moveOriginBy (foldl (^+^)  (r2 (0.0,0.0)) veclist) # showOrigin # named name 
+
 diagramOfDirections :: ForwardTurnDirection -> Diagram B
 diagramOfDirections dirs =
   let
@@ -121,23 +89,8 @@ diagramOfDirections dirs =
 
 
 
--- diagramOfDirections2 :: [ForwardTurnDirection] -> Diagram B
--- diagramOfDirections2 dirs =
---   let
--- --    df :: [ForwardTurnDirection] -> (a -> b) -> S.Seq(V2 n) -> [Diagram B] -> Diagram B
---     df [] _ ovec odiag = (toList ovec) # fromOffsets # fromVertices # strokeTrail # lc green # lw 2
---     df (x:xs) tranfunc vec ovec odiag =
---       case x of 
---         Forward s ->
---           df xs id (ovec S.|> unitX # scale s # tranfunc) odiag
---         Turn a ->
---           df xs (rotateBy a . tranfunc) ovec odiag
---         SubDirections sub -> df [] tranfunc ovec odiag
---   in
---     df dirs id unitY S.empty []
  
 recurse :: M.ForwardTurnDirection
---recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1] []
 recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1/8), Turn (-2/8), Forward 1]
           [ForwardTurnDirection [Forward 2] [], ForwardTurnDirection [Turn (1/8), Forward 1] []]
 
@@ -154,6 +107,7 @@ main =
   let
     algaeroot = root [A.A] (matchFunc A.grammar) 
     treeroot = root [BT.Leaf] (matchFunc BT.grammar)
+    fernroot = root [F.Constant] (matchFunc F.grammar)
   in
     do
 --      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ branch3
@@ -167,8 +121,20 @@ main =
       putStrLn $ canonicalStr $ symbols algaeroot 1
       putStrLn $ canonicalStr $ symbols algaeroot 2
 
-      putStrLn $ show $ tree $ symbols treeroot 5
-      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections $ tree $ symbols treeroot 5
+      putStrLn ""
+      putStrLn ""
+      putStrLn $ canonicalStr $ symbols fernroot 0
+      putStrLn ""
+      putStrLn $ canonicalStr $ symbols fernroot 1
+      putStrLn ""
+      putStrLn $ canonicalStr $ symbols fernroot 2
+      putStrLn ""
+      putStrLn $ canonicalStr $ symbols fernroot 3
+
+      
+
+--      putStrLn $ show $ tree $ symbols treeroot 7
+      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections $ tree $ symbols treeroot 7
       renderSVG "temp/recurse.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections recurse
       renderSVG "temp/manual.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections manual
       renderSVG "temp/manual2.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections manual2      
