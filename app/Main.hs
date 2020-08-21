@@ -19,6 +19,8 @@ import Diagrams.TwoD.Size
 
 import qualified Data.Sequence as S
 
+-- import Prettyprinter
+
 data ConversionState a b v n = ConversionState
                        { nextFunc :: a -> b,
                          nextScaleFactor :: Double,
@@ -96,11 +98,19 @@ recurse = ForwardTurnDirection [Forward (2/8), Turn (1/8), Forward 1, Forward (1
 
 manual = ForwardTurnDirection [Forward 1.0,Forward 1.0] [ForwardTurnDirection [Turn 0.125,Forward 1.0] [ForwardTurnDirection [Turn 0.125,Forward 0.5] [],ForwardTurnDirection [Turn (-0.125),Forward 0.5] []],ForwardTurnDirection [Turn (-0.125)] []]
 
-manual2 =
-  ForwardTurnDirection [Forward 1.0] [
-  ForwardTurnDirection [Turn (-0.125),Forward 1.0] [
-      ForwardTurnDirection [Turn (-0.125),Forward 1.0] []], ForwardTurnDirection [Turn (0.125),Forward 1.0] []]
+--manual2 =
+--  ForwardTurnDirection [Forward 1.0] [
+--  ForwardTurnDirection [Turn (-0.125),Forward 1.0] [
+--      ForwardTurnDirection [Turn (0.250),Forward 1.0] []], ForwardTurnDirection [Turn (0.125),Forward 1.0] []]
 
+manual2 =
+  ForwardTurnDirection [Forward 1.0,Turn (-6.25e-2)] [
+    ForwardTurnDirection [] [
+      ForwardTurnDirection [] [],
+      ForwardTurnDirection [Turn 6.25e-2] []],
+      ForwardTurnDirection [Turn 6.25e-2,Forward 1.0] [
+        ForwardTurnDirection [Turn 6.25e-2,Forward 1.0] [],
+        ForwardTurnDirection [Turn (-6.25e-2)] []]]
 
 main :: IO ()
 main = 
@@ -108,6 +118,7 @@ main =
     algaeroot = root [A.A] (matchFunc A.grammar) 
     treeroot = root [BT.Leaf] (matchFunc BT.grammar)
     fernroot = root [F.Constant] (matchFunc F.grammar)
+--    fernroot = root [F.Branch, F.TurnLeft, F.Branch, F.TurnLeft, F.Branch, F.TurnLeft, F.Branch] (matchFunc F.grammar2)
   in
     do
 --      renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ branch3
@@ -124,12 +135,21 @@ main =
       putStrLn ""
       putStrLn ""
       putStrLn $ canonicalStr $ symbols fernroot 0
-      putStrLn ""
+
       putStrLn $ canonicalStr $ symbols fernroot 1
-      putStrLn ""
+
       putStrLn $ canonicalStr $ symbols fernroot 2
-      putStrLn ""
+
       putStrLn $ canonicalStr $ symbols fernroot 3
+
+      putStrLn ""
+      putStrLn ""
+      putStrLn $ show $ tree $ symbols fernroot 0
+      putStrLn ""
+      putStrLn $ show $ tree $ symbols fernroot 1
+      putStrLn ""
+      putStrLn $ show $ tree $ symbols treeroot 2
+--      putStrLn $ show $ pretty $ tree $ symbols fernroot 1
 
       
 
@@ -137,7 +157,11 @@ main =
       renderSVG "temp/circle.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections $ tree $ symbols treeroot 7
       renderSVG "temp/recurse.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections recurse
       renderSVG "temp/manual.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections manual
-      renderSVG "temp/manual2.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections manual2      
+      renderSVG "temp/manual2.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections manual2
+      renderSVG "temp/fern.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections $ tree $ symbols fernroot 3
+      renderSVG "temp/fern2.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections $ tree $ symbols fernroot 4
+      renderSVG "temp/fern3.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections $ tree $ symbols fernroot 5
+      renderSVG "temp/fern3.svg" (mkSizeSpec2D (Just 800) (Just 800)) $ diagramOfDirections $ tree $ symbols fernroot 6
 --      putStrLn $ show $ tree $ symbols treeroot 0
 --      putStrLn $ show $ tree $ symbols treeroot 1
 --      putStrLn $ show $ tree $ symbols treeroot 2

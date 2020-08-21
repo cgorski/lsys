@@ -26,11 +26,14 @@ dependencies:
 - diagrams
 - diagrams-lib
 - diagrams-svg
+- prettyprinter
 - stack
 
 library:
   source-dirs: src
-
+  ghc-options:
+    - -Wall
+    
 executables:
   lsys-exe:
     main:                Main.hs
@@ -39,8 +42,10 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -Wall
     dependencies:
     - lsys
+    - prettyprinter
 
 tests:
   lsys-test:

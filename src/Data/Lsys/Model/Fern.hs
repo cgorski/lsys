@@ -3,7 +3,8 @@
 module Data.Lsys.Model.Fern
   (
     Alphabet (Branch,TurnLeft,TurnRight,Push,Pop,Constant)
-  , grammar 
+  , grammar
+  , grammar2
   ) where
 
 import Data.Foldable (toList)
@@ -28,6 +29,10 @@ instance Directionable Alphabet where
     let
       translate :: [Alphabet] -> ForwardTurnDirection -> (ForwardTurnDirection, [Alphabet])
       translate [] ftd = (ftd, [])
+      translate (Constant:xs) ftd =
+        case ftd of
+          ForwardTurnDirection ftl ftdl ->
+            translate xs $ ForwardTurnDirection (ftl ++ []) ftdl
       translate (Branch:xs) ftd =
         case ftd of
           ForwardTurnDirection ftl ftdl ->
@@ -35,11 +40,11 @@ instance Directionable Alphabet where
       translate (TurnLeft:xs) ftd =
         case ftd of
           ForwardTurnDirection ftl ftdl ->
-            translate xs $ ForwardTurnDirection (ftl ++ [Turn (1/8)]) ftdl
+            translate xs $ ForwardTurnDirection (ftl ++ [Turn (-1/22)]) ftdl
       translate (TurnRight:xs) ftd =
         case ftd of
           ForwardTurnDirection ftl ftdl ->
-            translate xs $ ForwardTurnDirection (ftl ++ [Turn (-1/8)]) ftdl
+            translate xs $ ForwardTurnDirection (ftl ++ [Turn (1/22)]) ftdl
       translate (Push:xs) ftd =
         case ftd of
           ForwardTurnDirection ftl ftdl ->
@@ -47,7 +52,7 @@ instance Directionable Alphabet where
               (result, remainder) = translate xs $ ForwardTurnDirection [] []
               (popPortion, popRemainder) = translate remainder $ ForwardTurnDirection [] []  
             in 
-              (ForwardTurnDirection (ftl)  (ftdl ++ [result] ++ [popPortion]), popRemainder)
+              (ForwardTurnDirection (ftl)  ([result] ++ [popPortion]), popRemainder)
       translate (Pop:xs) ftd =
         case ftd of
           ForwardTurnDirection ftl ftdl ->
@@ -57,18 +62,51 @@ instance Directionable Alphabet where
         (result, _) = translate lsys (ForwardTurnDirection [] [])
       in
         result 
-                                           
 
+-- F → FXF[-F[-FX]+FX] and X → F++F
 grammar :: MS.Map Alphabet [Alphabet]
 grammar = MS.fromList
           [(Branch,
-            [Branch, Branch])
+            [Branch, Constant, Branch, Push,TurnRight,Branch,Push, TurnRight, Branch, Constant,
+            Pop, TurnLeft, Branch, Constant, Pop])
           ,
            (Constant,
-            [Branch, TurnRight, Push, Push, Constant, Pop,
-             TurnLeft, Constant, Pop, TurnLeft, Branch,
-             Push, TurnLeft, Branch, Constant, Pop,
-             TurnRight, Constant])
-           ]
+            [Branch, TurnLeft, TurnLeft, Branch])
+          ,
+           (TurnRight,
+            [TurnRight])
+          ,
+           (TurnLeft,
+            [TurnLeft])
+          ,
+           (Push,
+            [Push])
+          ,
+           (Pop,
+            [Pop])
+          ]
+
+grammar2 :: MS.Map Alphabet [Alphabet]
+grammar2 = MS.fromList
+           [(Branch, [Branch, TurnLeft, Branch, TurnRight, Branch, TurnRight, Branch, Branch,
+                      TurnLeft, Branch, TurnLeft, Branch, TurnRight, Branch])
+           ,
+            (TurnRight,
+             [TurnRight])
+           ,
+            (TurnLeft,
+             [TurnLeft])
+           ,
+            (Push,
+             [Push])
+           ,
+            (Pop,
+             [Pop])
+           ,
+            (Constant,
+             [Constant])
+             ]
+
+           
                
           
